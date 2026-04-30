@@ -1,0 +1,13 @@
+/* Estilos personalizados para o painel administrativo */
+.fi-sidebar-nav {
+    background: linear-gradient(180deg, #1e3a8a 0%, #1e2a6e 100%) !important;
+}
+
+.fi-sidebar-item a:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: translateX(5px);
+}
+
+.fi-header {
+    border-bottom: 2px solid #1e3a8a !important;
+}

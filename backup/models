@@ -1,0 +1,514 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Aluno extends Model
+{
+    use SoftDeletes;
+
+    protected $table = 'alunos';
+    
+    protected $fillable = [
+        'processo', 'nome_completo', 'nome_pai', 'nome_mae', 'data_nascimento',
+        'naturalidade', 'provincia_id', 'municipio', 'endereco', 'bi',
+        'certidao_nascimento', 'encarregado_nome', 'encarregado_bi',
+        'encarregado_telefone', 'encarregado_email', 'foto', 'situacao', 'observacoes'
+    ];
+
+    public function provincia()
+    {
+        return $this->belongsTo(Provincia::class);
+    }
+
+    public function matriculas()
+    {
+        return $this->hasMany(Matricula::class);
+    }
+    
+    public function turmas()
+    {
+        return $this->belongsToMany(Turma::class, 'matriculas', 'aluno_id', 'turma_id');
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class AnoLectivo extends Model
+{
+    //
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Avaliacao extends Model
+{
+    protected $table = 'avaliacoes';
+    
+    protected $fillable = [
+        'titulo', 'descricao', 'arquivo', 'tipo', 'turma_id', 'professor_id',
+        'data_entrega', 'hora_limite', 'duracao', 'pontuacao_maxima', 'publicado'
+    ];
+
+    protected $casts = [
+        'data_entrega' => 'date',
+        'publicado' => 'boolean'
+    ];
+
+    public function turma()
+    {
+        return $this->belongsTo(Turma::class);
+    }
+
+    public function professor()
+    {
+        return $this->belongsTo(Professor::class);
+    }
+
+    public function questoes()
+    {
+        return $this->hasMany(Questao::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Comunicado extends Model
+{
+    protected $table = 'comunicados';
+    
+    protected $fillable = [
+        'titulo', 'mensagem', 'professor_id', 'turma_id', 'arquivo', 'para_todos'
+    ];
+
+    public function professor()
+    {
+        return $this->belongsTo(Professor::class);
+    }
+
+    public function turma()
+    {
+        return $this->belongsTo(Turma::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Conversa extends Model
+{
+    protected $table = 'conversas'; // Nome correto da tabela
+    
+    protected $fillable = ['user_1_id', 'user_2_id', 'titulo', 'ultima_mensagem'];
+    
+    protected $casts = [
+        'ultima_mensagem' => 'datetime'
+    ];
+
+    public function user1()
+    {
+        return $this->belongsTo(User::class, 'user_1_id');
+    }
+
+    public function user2()
+    {
+        return $this->belongsTo(User::class, 'user_2_id');
+    }
+
+    public function mensagens()
+    {
+        return $this->hasMany(Mensagem::class);
+    }
+
+    public function getOutroUserAttribute()
+    {
+        return auth()->id() == $this->user_1_id ? $this->user2 : $this->user1;
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Disciplina extends Model
+{
+    //
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Entrega extends Model
+{
+    protected $table = 'entregas';
+    
+    protected $fillable = [
+        'tarefa_id',      // ADICIONAR ESTE
+        'aluno_id', 
+        'arquivo', 
+        'comentario', 
+        'data_entrega', 
+        'nota', 
+        'feedback', 
+        'status'
+    ];
+
+    public function tarefa()
+    {
+        return $this->belongsTo(Tarefa::class);
+    }
+
+    public function aluno()
+    {
+        return $this->belongsTo(Aluno::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Material extends Model
+{
+    protected $table = 'materiais'; // Nome correto da tabela
+    
+    protected $fillable = [
+        'titulo', 'descricao', 'arquivo', 'tipo',
+        'turma_id', 'professor_id', 'visualizacoes', 'downloads'
+    ];
+
+    public function turma()
+    {
+        return $this->belongsTo(Turma::class);
+    }
+
+    public function professor()
+    {
+        return $this->belongsTo(Professor::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Matricula extends Model
+{
+    protected $table = 'matriculas';
+    
+    protected $fillable = [
+        'numero_matricula', 'aluno_id', 'turma_id', 'data_matricula',
+        'tipo', 'situacao', 'escola_origem', 'ano_lectivo_origem', 'observacoes'
+    ];
+
+    // Relacionamento com Aluno
+    public function aluno()
+    {
+        return $this->belongsTo(Aluno::class, 'aluno_id');
+    }
+
+    // Relacionamento com Turma
+    public function turma()
+    {
+        return $this->belongsTo(Turma::class);
+    }
+
+    // Relacionamento com Notas
+    public function notas()
+    {
+        return $this->hasMany(Nota::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Mensagem extends Model
+{
+    protected $table = 'mensagens';
+    
+    protected $fillable = ['conversa_id', 'user_id', 'mensagem', 'anexo', 'lida', 'lida_em'];
+    
+    protected $casts = [
+        'lida' => 'boolean',
+        'lida_em' => 'datetime'
+    ];
+
+    public function conversa()
+    {
+        return $this->belongsTo(Conversa::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class NivelEnsino extends Model
+{
+    //
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Nota extends Model
+{
+    protected $table = 'notas';
+    
+    protected $fillable = [
+        'matricula_id', 'disciplina_id', 'trimestre',
+        'avaliacao_continua', 'prova_trimestral', 'media_trimestral',
+        'exame_final', 'media_final', 'faltas', 'situacao'
+    ];
+
+    // Relacionamento com Matricula
+    public function matricula()
+    {
+        return $this->belongsTo(Matricula::class);
+    }
+
+    // Relacionamento com Disciplina - ADICIONAR ESTE
+    public function disciplina()
+    {
+        return $this->belongsTo(Disciplina::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Notificacao extends Model
+{
+    protected $table = 'notificacoes'; // Nome correto da tabela
+    
+    protected $fillable = ['user_id', 'titulo', 'mensagem', 'tipo', 'link', 'lida'];
+    
+    protected $casts = [
+        'lida' => 'boolean'
+    ];
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function scopeNaoLidas($query)
+    {
+        return $query->where('lida', false);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Professor extends Model
+{
+    protected $table = 'professores'; // Nome correto da tabela
+    
+    protected $fillable = [
+        'nome_completo', 'email', 'bi', 'nuit', 'telefone',
+        'categoria', 'especialidade', 'habilitacoes', 'data_contratacao',
+        'regime', 'situacao', 'observacoes'
+    ];
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Provincia extends Model
+{
+    //
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Questao extends Model
+{
+    protected $table = 'questoes'; // Nome correto da tabela
+    
+    protected $fillable = [
+        'avaliacao_id', 'pergunta', 'tipo', 'opcoes', 'resposta_correta', 'pontos'
+    ];
+
+    protected $casts = [
+        'opcoes' => 'array'
+    ];
+
+    public function avaliacao()
+    {
+        return $this->belongsTo(Avaliacao::class);
+    }
+
+    public function respostas()
+    {
+        return $this->hasMany(Resposta::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Resposta extends Model
+{
+    //
+}
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Tarefa extends Model
+{
+    protected $table = 'tarefas'; // Nome correto da tabela
+    
+    protected $fillable = [
+        'titulo', 'descricao', 'turma_id', 'professor_id',
+        'data_entrega', 'pontuacao_maxima', 'arquivo', 'publicado'
+    ];
+
+    protected $casts = [
+        'data_entrega' => 'date',
+        'publicado' => 'boolean'
+    ];
+
+    public function turma()
+    {
+        return $this->belongsTo(Turma::class);
+    }
+
+    public function professor()
+    {
+        return $this->belongsTo(Professor::class);
+    }
+
+    public function entregas()
+    {
+        return $this->hasMany(Entrega::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Turma extends Model
+{
+    protected $table = 'turmas';
+    
+    protected $fillable = [
+        'nome', 'classe', 'nivel_ensino_id', 'turno',
+        'capacidade_maxima', 'vagas_ocupadas', 'monodocencia',
+        'professor_principal_id', 'ano_lectivo_id'
+    ];
+
+    public function professor()
+    {
+        return $this->belongsTo(Professor::class, 'professor_principal_id');
+    }
+
+    public function alunos()
+    {
+        return $this->belongsToMany(Aluno::class, 'matriculas', 'turma_id', 'aluno_id');
+    }
+
+    public function matriculas()
+    {
+        return $this->hasMany(Matricula::class);
+    }
+
+    public function nivelEnsino()
+    {
+        return $this->belongsTo(NivelEnsino::class);
+    }
+
+    public function anoLectivo()
+    {
+        return $this->belongsTo(AnoLectivo::class);
+    }
+}<?php
+
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    protected $fillable = [
+        'name', 'email', 'password', 'role', 'telefone', 'foto', 
+        'ativo', 'ultimo_acesso', 'professor_id', 'aluno_id'
+    ];
+
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'ativo' => 'boolean',
+    ];
+
+    // Relacionamento com Aluno - CORRIGIR
+    public function aluno()
+    {
+        return $this->belongsTo(Aluno::class, 'aluno_id');
+    }
+
+    // Relacionamento com Professor
+    public function professor()
+    {
+        return $this->belongsTo(Professor::class, 'professor_id');
+    }
+
+    // Verificações de perfil
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isProfessor()
+    {
+        return $this->role === 'professor';
+    }
+
+    public function isAluno()
+    {
+        return $this->role === 'aluno';
+    }
+
+    public function isSecretaria()
+    {
+        return $this->role === 'secretaria';
+    }
+}

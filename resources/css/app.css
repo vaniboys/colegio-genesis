@@ -1,0 +1,37 @@
+/* Cores institucionais */
+:root {
+    --primary-blue: #1e3a8a;
+    --primary-blue-light: #3b82f6;
+    --primary-blue-dark: #1e2a6e;
+}
+
+/* Botões primários */
+.btn-primary {
+    background-color: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-light) !important;
+    border-color: var(--primary-blue-light) !important;
+}
+
+/* Links */
+a {
+    color: var(--primary-blue);
+}
+
+a:hover {
+    color: var(--primary-blue-light);
+}
+
+/* Badges e tags */
+.badge-primary {
+    background-color: var(--primary-blue);
+}
+
+/* Cards e bordas */
+.card-header {
+    background-color: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+}
