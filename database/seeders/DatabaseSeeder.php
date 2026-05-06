@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             AlunoSeeder::class,
             DisciplinaSeeder::class,
             TurmaSeeder::class,
+            LivroPrimarioSeeder::class,
             UserSeeder::class,
         ]);
 

@@ -35,7 +35,14 @@ class TurmaSeeder extends Seeder
         $cursos = Curso::all();
 
         $turmas = [
-            // 1º Ciclo do Ensino Secundário (7ª, 8ª, 9ª)
+            // 1º Ciclo do Ensino Secundário (1 ate 6 e 7ª, 8ª, 9ª)
+            ['nome' => '1A', 'classe_nome' => '1ª Classe', 'turno' => 'manha', 'curso_nome' => null],
+            ['nome' => '2A', 'classe_nome' => '2ª Classe', 'turno' => 'tarde', 'curso_nome' => null],
+            ['nome' => '3A', 'classe_nome' => '3ª Classe', 'turno' => 'manha', 'curso_nome' => null],
+            ['nome' => '4A', 'classe_nome' => '4ª Classe', 'turno' => 'tarde', 'curso_nome' => null],
+            ['nome' => '5A', 'classe_nome' => '5ª Classe', 'turno' => 'manha', 'curso_nome' => null],
+            ['nome' => '6A', 'classe_nome' => '6ª Classe', 'turno' => 'tarde', 'curso_nome' => null],
+            
             ['nome' => '7A', 'classe_nome' => '7ª Classe', 'turno' => 'manha', 'curso_nome' => null],
             ['nome' => '7B', 'classe_nome' => '7ª Classe', 'turno' => 'tarde', 'curso_nome' => null],
             ['nome' => '8A', 'classe_nome' => '8ª Classe', 'turno' => 'manha', 'curso_nome' => null],
@@ -44,37 +51,37 @@ class TurmaSeeder extends Seeder
             ['nome' => '9B', 'classe_nome' => '9ª Classe', 'turno' => 'tarde', 'curso_nome' => null],
             
             // 2º Ciclo do Ensino Secundário - Científico (10ª, 11ª, 12ª, 13ª)
-            ['nome' => '10A', 'classe_nome' => '10ª Classe', 'turno' => 'manha', 'curso_nome' => 'Ciências'],
-            ['nome' => '10B', 'classe_nome' => '10ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências'],
+            ['nome' => '10A', 'classe_nome' => '10ª Classe', 'turno' => 'manha', 'curso_nome' => 'Ciências Físicas e Biológicas'],
+            ['nome' => '10B', 'classe_nome' => '10ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências Físicas e Biológicas'],
             ['nome' => '10C', 'classe_nome' => '10ª Classe', 'turno' => 'manha', 'curso_nome' => 'Humanidades'],
-            ['nome' => '10D', 'classe_nome' => '10ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Humanidades'],
-            ['nome' => '10E-N', 'classe_nome' => '10ª Classe', 'turno' => 'noite', 'curso_nome' => 'Ciências'],
+            ['nome' => '10D', 'classe_nome' => '10ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências Económicas e Jurídicas'],
+            ['nome' => '10E-N', 'classe_nome' => '10ª Classe', 'turno' => 'noite', 'curso_nome' => 'Ciências Físicas e Biológicas'],
             
-            ['nome' => '11A', 'classe_nome' => '11ª Classe', 'turno' => 'manha', 'curso_nome' => 'Ciências'],
-            ['nome' => '11B', 'classe_nome' => '11ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências'],
+            ['nome' => '11A', 'classe_nome' => '11ª Classe', 'turno' => 'manha', 'curso_nome' => 'Ciências Físicas e Biológicas'],
+            ['nome' => '11B', 'classe_nome' => '11ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências Económicas e Jurídicas'],
             ['nome' => '11C', 'classe_nome' => '11ª Classe', 'turno' => 'manha', 'curso_nome' => 'Humanidades'],
             ['nome' => '11D', 'classe_nome' => '11ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Humanidades'],
             
-            ['nome' => '12A', 'classe_nome' => '12ª Classe', 'turno' => 'manha', 'curso_nome' => 'Ciências'],
-            ['nome' => '12B', 'classe_nome' => '12ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências'],
+            ['nome' => '12A', 'classe_nome' => '12ª Classe', 'turno' => 'manha', 'curso_nome' => 'Ciências Físicas e Biológicas'],
+            ['nome' => '12B', 'classe_nome' => '12ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências Económicas e Jurídicas'],
             ['nome' => '12C', 'classe_nome' => '12ª Classe', 'turno' => 'manha', 'curso_nome' => 'Humanidades'],
             ['nome' => '12D', 'classe_nome' => '12ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Humanidades'],
             
-            ['nome' => '13A', 'classe_nome' => '13ª Classe', 'turno' => 'manha', 'curso_nome' => 'Ciências'],
-            ['nome' => '13B', 'classe_nome' => '13ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências'],
+            ['nome' => '13A', 'classe_nome' => '13ª Classe', 'turno' => 'manha', 'curso_nome' => 'Ciências Económicas e Jurídicas'],
+            ['nome' => '13B', 'classe_nome' => '13ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Ciências Físicas e Biológicas'],
             ['nome' => '13C', 'classe_nome' => '13ª Classe', 'turno' => 'manha', 'curso_nome' => 'Humanidades'],
             ['nome' => '13D', 'classe_nome' => '13ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Humanidades'],
             
             // Cursos Técnicos
-            ['nome' => '10TI', 'classe_nome' => '10ª Classe', 'turno' => 'manha', 'curso_nome' => 'Técnico de Informática'],
+            ['nome' => '10TI', 'classe_nome' => '10ª Classe', 'turno' => 'manha', 'curso_nome' => 'Informática de Gestão'],
             ['nome' => '10AC', 'classe_nome' => '10ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Técnico de Contabilidade'],
-            ['nome' => '10EF', 'classe_nome' => '10ª Classe', 'turno' => 'manha', 'curso_nome' => 'Técnico de Enfermagem'],
-            ['nome' => '11TI', 'classe_nome' => '11ª Classe', 'turno' => 'manha', 'curso_nome' => 'Técnico de Informática'],
-            ['nome' => '11AC', 'classe_nome' => '11ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Técnico de Contabilidade'],
-            ['nome' => '12TI', 'classe_nome' => '12ª Classe', 'turno' => 'manha', 'curso_nome' => 'Técnico de Informática'],
-            ['nome' => '12EF', 'classe_nome' => '12ª Classe', 'turno' => 'manha', 'curso_nome' => 'Técnico de Enfermagem'],
-            ['nome' => '13TI', 'classe_nome' => '13ª Classe', 'turno' => 'manha', 'curso_nome' => 'Técnico de Informática'],
-            ['nome' => '13AC', 'classe_nome' => '13ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Técnico de Contabilidade'],
+            ['nome' => '10EF', 'classe_nome' => '10ª Classe', 'turno' => 'manha', 'curso_nome' => 'Análises Clínicas'],
+            ['nome' => '11TI', 'classe_nome' => '11ª Classe', 'turno' => 'manha', 'curso_nome' => 'Informática e Sistemas'],
+            ['nome' => '11AC', 'classe_nome' => '11ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Produção Agrícola'],
+            ['nome' => '12TI', 'classe_nome' => '12ª Classe', 'turno' => 'manha', 'curso_nome' => 'Construção Civil'],
+            ['nome' => '12EF', 'classe_nome' => '12ª Classe', 'turno' => 'manha', 'curso_nome' => 'Enfermagem Geral'],
+            ['nome' => '13TI', 'classe_nome' => '13ª Classe', 'turno' => 'manha', 'curso_nome' => 'Electricidade Industrial'],
+            ['nome' => '13AC', 'classe_nome' => '13ª Classe', 'turno' => 'tarde', 'curso_nome' => 'Contabilidade Geral'],
         ];
 
         $countTurmas = 0;

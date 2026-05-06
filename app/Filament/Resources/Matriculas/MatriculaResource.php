@@ -54,4 +54,5 @@ class MatriculaResource extends Resource
     {
         return [];
     }
+    
 }
