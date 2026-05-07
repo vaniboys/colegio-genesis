@@ -16,17 +16,18 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable(); // ✅ Adicionar esta linha
             $table->string('password');
 
-            $table->dropColumn('role');
-
+            // ✅ Role como enum (sem dropColumn)
             $table->enum('role', [
                 'admin',
                 'professor',
                 'aluno',
                 'secretaria'
-            ]);
+            ])->default('aluno'); // ✅ Valor padrão
             
+            // Chaves estrangeiras
             $table->foreignId('aluno_id')
                 ->nullable()
                 ->constrained('alunos')

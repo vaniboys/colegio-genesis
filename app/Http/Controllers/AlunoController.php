@@ -554,58 +554,88 @@ class AlunoController extends Controller
                                               'percentagemReprovacao'));
     }
 
-    // ==================== LIVROS DE APOIO ====================
     
+
+// ==================== LIVROS DE APOIO ====================
+
+
+
     public function livros()
     {
         $user = auth()->user();
         $aluno = $user->aluno;
         
-        $matricula = Matricula::where('aluno_id', $aluno->id ?? 0)
+        if (!$aluno) {
+            return view('aluno.livros')->with('error', 'Aluno não encontrado.');
+        }
+        
+        $matricula = Matricula::where('aluno_id', $aluno->id)
                             ->where('situacao', 'ativa')
-                            ->with(['turma', 'turma.disciplinas'])
                             ->first();
         
-        $livros = collect();
-        $livrosPorDisciplina = [];
-        
-        if ($matricula && $matricula->turma) {
-            $turmaId = $matricula->turma->id;
-            $disciplinas = $matricula->turma->disciplinas;
-            
-            $livros = Livro::where('ativo', true)
-                        ->where(function($q) use ($turmaId, $disciplinas) {
-                            $q->where('turma_id', $turmaId)
-                                ->orWhereIn('disciplina_id', $disciplinas->pluck('id'));
-                        })
-                        ->with('disciplina')
-                        ->get();
-            
-            foreach ($disciplinas as $disciplina) {
-                $livrosPorDisciplina[$disciplina->id] = [
-                    'disciplina' => $disciplina,
-                    'livros' => $livros->where('disciplina_id', $disciplina->id)
-                ];
-            }
+        if (!$matricula) {
+            return view('aluno.livros')->with('error', 'Você não está matriculado em nenhuma turma ativa.');
         }
         
-        return view('aluno.livros', compact('livros', 'livrosPorDisciplina'));
+        // Buscar livros APENAS da turma do aluno (usando turma_id)
+        $livros = Livro::where('ativo', true)
+                    ->where('turma_id', $matricula->turma_id)
+                    ->with('disciplina')
+                    ->get();
+        
+        // Agrupar por disciplina (simplificado)
+        $livrosPorDisciplina = $livros->groupBy(function($livro) {
+            return $livro->disciplina ? $livro->disciplina->nome : 'Materiais Gerais';
+        });
+        
+        $classe = $matricula->turma->classe ?? null;
+        
+        return view('aluno.livros', compact('livros', 'livrosPorDisciplina', 'classe'));
     }
 
-    public function downloadLivro($id)
-    {
-        $livro = Livro::findOrFail($id);
-        $livro->increment('downloads');
-        
-        $filePath = storage_path('app/public/livros/' . $livro->arquivo_pdf);
-        
-        if (!file_exists($filePath)) {
-            $pdf = Pdf::loadView('pdf.livro-exemplo', compact('livro'));
-            return $pdf->download($livro->titulo . '.pdf');
-        }
-        
-        return response()->download($filePath, $livro->titulo . '.pdf');
+    // App\Http\Controllers\AlunoController.php
+
+public function downloadLivro($id)
+{
+    $user = auth()->user();
+    $aluno = $user->aluno;
+    
+    if (!$aluno) {
+        abort(403, 'Aluno não encontrado.');
     }
+    
+    $livro = Livro::where('id', $id)->where('ativo', true)->firstOrFail();
+    
+    // Verificar se o aluno tem acesso ao livro
+    $matricula = Matricula::where('aluno_id', $aluno->id)
+                          ->where('situacao', 'ativa')
+                          ->first();
+    
+    if (!$matricula) {
+        abort(403, 'Você não está matriculado.');
+    }
+    
+    $turmaId = $matricula->turma_id;
+    
+    // Verificar se o livro pertence à turma do aluno
+    $temAcesso = ($livro->turma_id == $turmaId);
+    
+    if (!$temAcesso) {
+        abort(403, 'Você não tem acesso a este livro.');
+    }
+    
+    // Incrementar downloads
+    $livro->increment('downloads');
+    
+    // Verificar se o arquivo existe
+    if ($livro->arquivo_pdf && Storage::disk('public')->exists($livro->arquivo_pdf)) {
+        return response()->download(Storage::disk('public')->path($livro->arquivo_pdf), $livro->titulo . '.pdf');
+    }
+    
+    // Gerar PDF placeholder
+    $pdf = Pdf::loadView('pdf.livro-placeholder', ['livro' => $livro]);
+    return $pdf->download($livro->titulo . '.pdf');
+}
 
     // ==================== MÉTODOS PRIVADOS ====================
 

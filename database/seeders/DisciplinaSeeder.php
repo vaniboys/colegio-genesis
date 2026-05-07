@@ -23,13 +23,18 @@ class DisciplinaSeeder extends Seeder
         
         // ==================== DISCIPLINAS ====================
         $disciplinas = [
-            // Ensino Primário (1ª-6ª)
+            // ========== BÁSICO/PRIMÁRIO (1ª-6ª) ==========
             ['nome' => 'Língua Portuguesa', 'codigo' => 'LP', 'carga_horaria' => 6, 'niveis' => ['PRIM', 'SEC1', 'SEC2', 'SEC2_T'], 'obrigatoria' => true],
             ['nome' => 'Matemática', 'codigo' => 'MAT', 'carga_horaria' => 6, 'niveis' => ['PRIM', 'SEC1', 'SEC2', 'SEC2_T'], 'obrigatoria' => true],
             ['nome' => 'Ciências da Natureza', 'codigo' => 'CN', 'carga_horaria' => 3, 'niveis' => ['PRIM', 'SEC1'], 'obrigatoria' => false],
             ['nome' => 'Educação Física', 'codigo' => 'EF', 'carga_horaria' => 2, 'niveis' => ['PRIM', 'SEC1', 'SEC2', 'SEC2_T'], 'obrigatoria' => false],
             ['nome' => 'Educação Moral e Cívica', 'codigo' => 'EMC', 'carga_horaria' => 2, 'niveis' => ['PRIM', 'SEC1'], 'obrigatoria' => false],
             ['nome' => 'Educação Artística', 'codigo' => 'EA', 'carga_horaria' => 2, 'niveis' => ['PRIM', 'SEC1'], 'obrigatoria' => false],
+            
+            // ⭐ NOVAS DISCIPLINAS PARA O ENSINO PRIMÁRIO (adicione estas)
+            ['nome' => 'Educação Manual e Plástica', 'codigo' => 'EMP', 'carga_horaria' => 2, 'niveis' => ['PRIM'], 'obrigatoria' => false],
+            ['nome' => 'Educação Musical', 'codigo' => 'EMU', 'carga_horaria' => 2, 'niveis' => ['PRIM'], 'obrigatoria' => false],
+            ['nome' => 'Estudo do Meio', 'codigo' => 'EM', 'carga_horaria' => 4, 'niveis' => ['PRIM'], 'obrigatoria' => true],
             
             // I e II Ciclo (7ª-13ª)
             ['nome' => 'História', 'codigo' => 'HIST', 'carga_horaria' => 3, 'niveis' => ['SEC1', 'SEC2', 'SEC2_T'], 'obrigatoria' => false],
@@ -101,5 +106,6 @@ class DisciplinaSeeder extends Seeder
         $this->command->info("📊 RESUMO FINAL:");
         $this->command->info("   Total de disciplinas no banco: {$totalDisciplinas}");
         $this->command->info("   Total de associações: {$totalAssociacoes}");
+        
     }
 }

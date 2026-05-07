@@ -125,9 +125,8 @@ Route::middleware(['auth', 'role:aluno'])->prefix('aluno')->name('aluno.')->grou
     
     Route::get('/historico', [AlunoController::class, 'historico'])->name('historico');
 
-      Route::get('/livros', [AlunoController::class, 'livros'])->name('livros');
+    Route::get('/livros', [AlunoController::class, 'livros'])->name('livros');
     Route::get('/livros/download/{id}', [AlunoController::class, 'downloadLivro'])->name('download-livro');
-
 
 });
 

@@ -71,7 +71,7 @@ class MatriculasTable
                     ->icon(fn (string $state): string => match ($state) {
                         'nova' => 'heroicon-m-plus-circle',
                         'renovacao' => 'heroicon-m-arrow-path',
-                        'transferencia' => 'heroicon-m-switch-horizontal',
+                        'transferencia' => 'heroicon-m-arrow-right-start-on-rectangle',
                         default => 'heroicon-m-question-mark-circle',
                     })
                     ->toggleable(),

@@ -369,7 +369,7 @@
     <div class="sidebar-logo">
         <i class="fas fa-graduation-cap"></i>
         <div class="fw-bold mt-2">Colégio Gênesis</div>
-        <div class="small">Painel do Aluno wwwww</div>
+        <div class="small">Painel do Aluno</div>
     </div>
     
     <nav>

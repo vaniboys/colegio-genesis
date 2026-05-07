@@ -10,7 +10,11 @@ class CursoSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->command->info('📚 Criando cursos do sistema...');
+        $this->command->newLine();
+
         // Buscar níveis
+        $prim = NivelEnsino::where('codigo', 'PRIM')->first(); // Ensino Primário
         $sec1 = NivelEnsino::where('codigo', 'SEC1')->first(); // I Ciclo (7ª-9ª)
         $sec2 = NivelEnsino::where('codigo', 'SEC2')->first(); // II Ciclo Geral (10ª-12ª)
         $sec2t = NivelEnsino::where('codigo', 'SEC2_T')->first(); // II Ciclo Técnico (10ª-13ª)
@@ -20,11 +24,13 @@ class CursoSeeder extends Seeder
             return;
         }
 
-        $cursos = [
-            // ==================== I CICLO (7ª-9ª) ====================
-            // Sem cursos - apenas disciplinas gerais
-            // (não adicionar cursos aqui)
+        $this->command->info("📌 Níveis encontrados:");
+        $this->command->line("   - I Ciclo Geral: " . ($sec1 ? '✓' : '✗'));
+        $this->command->line("   - II Ciclo Geral: " . ($sec2 ? '✓' : '✗'));
+        $this->command->line("   - II Ciclo Técnico: " . ($sec2t ? '✓' : '✗'));
+        $this->command->newLine();
 
+        $cursos = [
             // ==================== II CICLO GERAL (10ª-12ª) ====================
             [
                 'nome' => 'Ciências Físicas e Biológicas',
@@ -47,7 +53,14 @@ class CursoSeeder extends Seeder
                 'descricao' => 'Curso geral de humanidades - Línguas, História, Geografia',
                 'ativo' => true,
             ],
-
+            [
+                'nome' => 'Contabilidade Geral',
+                'codigo' => 'CG',
+                'nivel_ensino_id' => $sec2?->id,
+                'descricao' => 'Curso geral de humanidades - Línguas, História, Geografia',
+                'ativo' => true,
+            ],
+        
             // ==================== II CICLO TÉCNICO (10ª-13ª) ====================
             // Informática
             [
@@ -67,8 +80,8 @@ class CursoSeeder extends Seeder
 
             // Contabilidade
             [
-                'nome' => 'Contabilidade Geral',
-                'codigo' => 'CONT-GER',
+                'nome' => 'Técnico de Contabilidade',
+                'codigo' => 'TEC-CONT',
                 'nivel_ensino_id' => $sec2t?->id,
                 'descricao' => 'Contabilidade e escrituração empresarial',
                 'ativo' => true,
@@ -123,13 +136,56 @@ class CursoSeeder extends Seeder
             ],
         ];
 
-        // Inserir apenas se o nível existir
-        $cursosValidos = array_filter($cursos, fn($c) => $c['nivel_ensino_id'] !== null);
-        
-        Curso::insert($cursosValidos);
+        $count = 0;
+        $criados = 0;
+        $atualizados = 0;
 
-        $this->command->info('✅ ' . count($cursosValidos) . ' cursos criados!');
-        $this->command->info('   - II Ciclo Geral: ' . count(array_filter($cursosValidos, fn($c) => $c['nivel_ensino_id'] === ($sec2?->id))));
-        $this->command->info('   - II Ciclo Técnico: ' . count(array_filter($cursosValidos, fn($c) => $c['nivel_ensino_id'] === ($sec2t?->id))));
+        // Filtrar apenas cursos com nível válido
+        $cursosValidos = array_filter($cursos, fn($c) => $c['nivel_ensino_id'] !== null);
+
+        foreach ($cursosValidos as $cursoData) {
+            // Usar updateOrCreate para evitar duplicatas
+            $curso = Curso::updateOrCreate(
+                ['codigo' => $cursoData['codigo']],
+                [
+                    'nome' => $cursoData['nome'],
+                    'codigo' => $cursoData['codigo'],
+                    'nivel_ensino_id' => $cursoData['nivel_ensino_id'],
+                    'descricao' => $cursoData['descricao'],
+                    'ativo' => $cursoData['ativo'],
+                ]
+            );
+            $count++;
+            
+            if ($curso->wasRecentlyCreated) {
+                $criados++;
+                $this->command->line("   ✓ Criado: {$curso->nome} ({$curso->codigo})");
+            } else {
+                $atualizados++;
+                $this->command->line("   🔄 Atualizado: {$curso->nome} ({$curso->codigo})");
+            }
+        }
+
+        $this->command->newLine();
+        $this->command->info("══════════════════════════════════════════");
+        $this->command->info("✅ TOTAL: {$count} cursos processados!");
+        $this->command->info("   ✨ Criados: {$criados}");
+        $this->command->info("   🔄 Atualizados: {$atualizados}");
+        $this->command->info("══════════════════════════════════════════");
+
+        // Resumo por nível
+        $this->command->newLine();
+        $this->command->info("📊 RESUMO POR NÍVEL DE ENSINO:");
+        
+        if ($sec2) {
+            $totalSec2 = Curso::where('nivel_ensino_id', $sec2->id)->count();
+            $this->command->info("   🎓 II Ciclo Geral (Científico): {$totalSec2} curso(s)");
+        }
+        
+        if ($sec2t) {
+            $totalSec2t = Curso::where('nivel_ensino_id', $sec2t->id)->count();
+            $this->command->info("   🔧 II Ciclo Técnico: {$totalSec2t} curso(s)");
+        }
+
     }
 }

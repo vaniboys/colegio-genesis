@@ -21,54 +21,45 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CursoSeeder::class,
             ClasseSeeder::class,
+            DisciplinaSeeder::class,
         ]);
 
-        // 3. PESSOAS
+        // 3. TURMAS
+        $this->call([
+            TurmaSeeder::class,
+        ]);
+
+        // 4. PESSOAS
         $this->call([
             ProfessorSeeder::class,
-            AlunoSeeder::class,
-            DisciplinaSeeder::class,
-            TurmaSeeder::class,
-            LivroPrimarioSeeder::class,
-            UserSeeder::class,
+            AlunoSeeder::class,           // Cria 650 alunos
+            LivroPrimarioSeeder::class,   // Livros
+            UserSeeder::class,            // Admin, Professores, Secretaria
+            MatriculaSeeder::class,       // Matricula e cria contas
         ]);
 
-        // 4. ROLES + ATRIBUIÇÃO SEGURA
+        // 5. ROLES
         $this->createRolesAndAssign();
     }
 
     private function createRolesAndAssign(): void
     {
-        //  CRIAR ROLES (OBRIGATÓRIO)
-        $adminRole = Role::firstOrCreate([
-            'name' => 'admin',
-            'guard_name' => 'web',
-        ]);
+        // Criar roles
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $professorRole = Role::firstOrCreate(['name' => 'professor', 'guard_name' => 'web']);
+        $alunoRole = Role::firstOrCreate(['name' => 'aluno', 'guard_name' => 'web']);
+        $secretariaRole = Role::firstOrCreate(['name' => 'secretaria', 'guard_name' => 'web']);
 
-        $profRole = Role::firstOrCreate([
-            'name' => 'professor',
-            'guard_name' => 'web',
-        ]);
-
-        $alunoRole = Role::firstOrCreate([
-            'name' => 'aluno',
-            'guard_name' => 'web',
-        ]);
-
-        // 🔥 ATRIBUIR ROLES POR EMAIL (SEGURO)
+        // Atribuir admin
         $admin = User::where('email', 'admin@escola.ao')->first();
-        if ($admin) {
+        if ($admin && !$admin->hasRole('admin')) {
             $admin->assignRole($adminRole);
         }
 
-        $prof = User::where('email', 'professor@escola.ao')->first();
-        if ($prof) {
-            $prof->assignRole($profRole);
-        }
-
-        $aluno = User::where('email', 'aluno@escola.ao')->first();
-        if ($aluno) {
-            $aluno->assignRole($alunoRole);
+        // Atribuir professor (primeiro professor)
+        $professor = User::where('email', 'professor@escola.ao')->first();
+        if ($professor && !$professor->hasRole('professor')) {
+            $professor->assignRole($professorRole);
         }
     }
 }

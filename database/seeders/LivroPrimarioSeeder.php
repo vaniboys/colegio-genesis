@@ -7,416 +7,56 @@ use App\Models\Livro;
 use App\Models\Disciplina;
 use App\Models\Turma;
 use App\Models\Classe;
+use Illuminate\Support\Facades\Schema;
 
 class LivroPrimarioSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buscar disciplinas existentes
-        $disciplinas = Disciplina::whereIn('codigo', ['LP', 'MAT', 'CN', 'EF', 'EA', 'EMC'])->get();
+        $this->command->info('📚 Criando biblioteca de livros...');
+        $this->command->newLine();
+
+        // Buscar disciplinas
+        $disciplinas = Disciplina::get()->keyBy('codigo');
         
-        // Mapear disciplinas por código
-        $disciplinasMap = [];
-        foreach ($disciplinas as $d) {
-            $disciplinasMap[$d->codigo] = $d->id;
+        // Buscar turmas
+        $turmas = Turma::with('classe')->get();
+        $turmasPorClasse = [];
+        foreach ($turmas as $turma) {
+            $classeNome = $turma->classe->nome;
+            if (!isset($turmasPorClasse[$classeNome])) {
+                $turmasPorClasse[$classeNome] = [];
+            }
+            $turmasPorClasse[$classeNome][] = $turma;
         }
+
+        $livros = $this->getLivrosData();
         
-        // Buscar classes do Ensino Primário (1ª a 6ª)
-        $classes = Classe::where('nivel_ensino_id', 1)->get(); // nivel_ensino_id 1 = PRIM
-        
-        // Livros para cada classe
-        $livros = [
-            // ==================== 1ª CLASSE ====================
-            [
-                'titulo' => 'Matemática - 1ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-001-1',
-                'disciplina_codigo' => 'MAT',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Matemática para a 1ª Classe do Ensino Primário.',
-                'classe_nome' => '1ª Classe',
-            ],
-            [
-                'titulo' => 'Língua Portuguesa - 1ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-001-2',
-                'disciplina_codigo' => 'LP',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Língua Portuguesa para a 1ª Classe do Ensino Primário.',
-                'classe_nome' => '1ª Classe',
-            ],
-            [
-                'titulo' => 'Estudo do Meio - 1ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-001-3',
-                'disciplina_codigo' => 'CN',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Estudo do Meio para a 1ª Classe do Ensino Primário.',
-                'classe_nome' => '1ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Manual e Plástica - 1ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-001-4',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Manual e Plástica para a 1ª Classe.',
-                'classe_nome' => '1ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Física - 1ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-001-5',
-                'disciplina_codigo' => 'EF',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Física para a 1ª Classe.',
-                'classe_nome' => '1ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Musical - 1ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-001-6',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Musical para a 1ª Classe.',
-                'classe_nome' => '1ª Classe',
-            ],
-
-            // ==================== 2ª CLASSE ====================
-            [
-                'titulo' => 'Matemática - 2ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-002-1',
-                'disciplina_codigo' => 'MAT',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Matemática para a 2ª Classe do Ensino Primário.',
-                'classe_nome' => '2ª Classe',
-            ],
-            [
-                'titulo' => 'Língua Portuguesa - 2ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-002-2',
-                'disciplina_codigo' => 'LP',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Língua Portuguesa para a 2ª Classe do Ensino Primário.',
-                'classe_nome' => '2ª Classe',
-            ],
-            [
-                'titulo' => 'Estudo do Meio - 2ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-002-3',
-                'disciplina_codigo' => 'CN',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Estudo do Meio para a 2ª Classe do Ensino Primário.',
-                'classe_nome' => '2ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Manual e Plástica - 2ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-002-4',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Manual e Plástica para a 2ª Classe.',
-                'classe_nome' => '2ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Física - 2ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-002-5',
-                'disciplina_codigo' => 'EF',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Física para a 2ª Classe.',
-                'classe_nome' => '2ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Musical - 2ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-002-6',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Musical para a 2ª Classe.',
-                'classe_nome' => '2ª Classe',
-            ],
-
-            // ==================== 3ª CLASSE ====================
-            [
-                'titulo' => 'Matemática - 3ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-003-1',
-                'disciplina_codigo' => 'MAT',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Matemática para a 3ª Classe do Ensino Primário.',
-                'classe_nome' => '3ª Classe',
-            ],
-            [
-                'titulo' => 'Língua Portuguesa - 3ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-003-2',
-                'disciplina_codigo' => 'LP',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Língua Portuguesa para a 3ª Classe do Ensino Primário.',
-                'classe_nome' => '3ª Classe',
-            ],
-            [
-                'titulo' => 'Estudo do Meio - 3ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-003-3',
-                'disciplina_codigo' => 'CN',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Estudo do Meio para a 3ª Classe do Ensino Primário.',
-                'classe_nome' => '3ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Manual e Plástica - 3ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-003-4',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Manual e Plástica para a 3ª Classe.',
-                'classe_nome' => '3ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Física - 3ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-003-5',
-                'disciplina_codigo' => 'EF',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Física para a 3ª Classe.',
-                'classe_nome' => '3ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Musical - 3ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-003-6',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Musical para a 3ª Classe.',
-                'classe_nome' => '3ª Classe',
-            ],
-
-            // ==================== 4ª CLASSE ====================
-            [
-                'titulo' => 'Matemática - 4ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-004-1',
-                'disciplina_codigo' => 'MAT',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Matemática para a 4ª Classe do Ensino Primário.',
-                'classe_nome' => '4ª Classe',
-            ],
-            [
-                'titulo' => 'Língua Portuguesa - 4ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-004-2',
-                'disciplina_codigo' => 'LP',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Língua Portuguesa para a 4ª Classe do Ensino Primário.',
-                'classe_nome' => '4ª Classe',
-            ],
-            [
-                'titulo' => 'Estudo do Meio - 4ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-004-3',
-                'disciplina_codigo' => 'CN',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Estudo do Meio para a 4ª Classe do Ensino Primário.',
-                'classe_nome' => '4ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Manual e Plástica - 4ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-004-4',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Manual e Plástica para a 4ª Classe.',
-                'classe_nome' => '4ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Física - 4ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-004-5',
-                'disciplina_codigo' => 'EF',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Física para a 4ª Classe.',
-                'classe_nome' => '4ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Musical - 4ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-004-6',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Musical para a 4ª Classe.',
-                'classe_nome' => '4ª Classe',
-            ],
-
-            // ==================== 5ª CLASSE ====================
-            [
-                'titulo' => 'Matemática - 5ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-005-1',
-                'disciplina_codigo' => 'MAT',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Matemática para a 5ª Classe do Ensino Primário.',
-                'classe_nome' => '5ª Classe',
-            ],
-            [
-                'titulo' => 'Língua Portuguesa - 5ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-005-2',
-                'disciplina_codigo' => 'LP',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Língua Portuguesa para a 5ª Classe do Ensino Primário.',
-                'classe_nome' => '5ª Classe',
-            ],
-            [
-                'titulo' => 'Estudo do Meio - 5ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-005-3',
-                'disciplina_codigo' => 'CN',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Estudo do Meio para a 5ª Classe do Ensino Primário.',
-                'classe_nome' => '5ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Manual e Plástica - 5ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-005-4',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Manual e Plástica para a 5ª Classe.',
-                'classe_nome' => '5ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Física - 5ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-005-5',
-                'disciplina_codigo' => 'EF',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Física para a 5ª Classe.',
-                'classe_nome' => '5ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Musical - 5ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-005-6',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Musical para a 5ª Classe.',
-                'classe_nome' => '5ª Classe',
-            ],
-
-            // ==================== 6ª CLASSE ====================
-            [
-                'titulo' => 'Matemática - 6ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-006-1',
-                'disciplina_codigo' => 'MAT',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Matemática para a 6ª Classe do Ensino Primário.',
-                'classe_nome' => '6ª Classe',
-            ],
-            [
-                'titulo' => 'Língua Portuguesa - 6ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-006-2',
-                'disciplina_codigo' => 'LP',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Língua Portuguesa para a 6ª Classe do Ensino Primário.',
-                'classe_nome' => '6ª Classe',
-            ],
-            [
-                'titulo' => 'Estudo do Meio - 6ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-006-3',
-                'disciplina_codigo' => 'CN',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Estudo do Meio para a 6ª Classe do Ensino Primário.',
-                'classe_nome' => '6ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Manual e Plástica - 6ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-006-4',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Manual e Plástica para a 6ª Classe.',
-                'classe_nome' => '6ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Física - 6ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-006-5',
-                'disciplina_codigo' => 'EF',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Física para a 6ª Classe.',
-                'classe_nome' => '6ª Classe',
-            ],
-            [
-                'titulo' => 'Educação Musical - 6ª Classe',
-                'autor' => 'Equipa INADE',
-                'editora' => 'INADE',
-                'isbn' => '978-989-1-006-6',
-                'disciplina_codigo' => 'EA',
-                'ano_publicacao' => 2024,
-                'descricao' => 'Manual de Educação Musical para a 6ª Classe.',
-                'classe_nome' => '6ª Classe',
-            ],
-        ];
-
         $count = 0;
         $errors = 0;
 
-        foreach ($livros as $livro) {
-            // Buscar a classe
-            $classe = $classes->firstWhere('nome', $livro['classe_nome']);
+        foreach ($livros as $livroData) {
+            // Buscar disciplina
+            $disciplina = isset($disciplinas[$livroData['disciplina_codigo']]) 
+                ? $disciplinas[$livroData['disciplina_codigo']] 
+                : null;
             
-            if (!$classe) {
-                $this->command->warn("⚠️ Classe '{$livro['classe_nome']}' não encontrada. Livro '{$livro['titulo']}' ignorado.");
+            if (!$disciplina) {
+                $this->command->warn("⚠️ Disciplina '{$livroData['disciplina_codigo']}' não encontrada. Livro '{$livroData['titulo']}' ignorado.");
                 $errors++;
                 continue;
             }
             
-            // Buscar a disciplina
-            $disciplinaId = $disciplinasMap[$livro['disciplina_codigo']] ?? null;
+            // Buscar turma da classe correspondente
+            $classeNome = $livroData['classe_nome'];
+            $turma = null;
             
-            if (!$disciplinaId) {
-                $this->command->warn("⚠️ Disciplina '{$livro['disciplina_codigo']}' não encontrada. Livro '{$livro['titulo']}' ignorado.");
+            if (isset($turmasPorClasse[$classeNome]) && !empty($turmasPorClasse[$classeNome])) {
+                $turma = $turmasPorClasse[$classeNome][0]; // Pega a primeira turma da classe
+            }
+            
+            if (!$turma) {
+                $this->command->warn("⚠️ Nenhuma turma encontrada para a classe '{$classeNome}'. Livro '{$livroData['titulo']}' ignorado.");
                 $errors++;
                 continue;
             }
@@ -424,39 +64,358 @@ class LivroPrimarioSeeder extends Seeder
             // Criar ou atualizar livro
             Livro::updateOrCreate(
                 [
-                    'titulo' => $livro['titulo'],
-                    'disciplina_id' => $disciplinaId,
+                    'titulo' => $livroData['titulo'],
+                    'disciplina_id' => $disciplina->id,
                 ],
                 [
-                    'autor' => $livro['autor'],
-                    'editora' => $livro['editora'],
-                    'isbn' => $livro['isbn'],
-                    'disciplina_id' => $disciplinaId,
-                    'ano_publicacao' => $livro['ano_publicacao'],
-                    'descricao' => $livro['descricao'],
+                    'titulo' => $livroData['titulo'],
+                    'autor' => $livroData['autor'],
+                    'editora' => $livroData['editora'],
+                    'isbn' => $livroData['isbn'] ?? null,
+                    'disciplina_id' => $disciplina->id,
+                    'turma_id' => $turma->id,
+                    'ano_publicacao' => $livroData['ano_publicacao'],
+                    'descricao' => $livroData['descricao'],
+                    'capa' => $livroData['capa'] ?? null,
+                    'arquivo_pdf' => $livroData['arquivo_pdf'] ?? null,
+                    'visualizacoes' => 0,
+                    'downloads' => 0,
                     'ativo' => true,
                 ]
             );
+            
             $count++;
+            $this->command->line("   ✓ {$livroData['titulo']}");
         }
 
         $this->command->newLine();
-        $this->command->info("✅ {$count} livros criados/atualizados para o Ensino Primário!");
+        $this->command->info("══════════════════════════════════════════");
+        $this->command->info("✅ {$count} livros criados/atualizados!");
         
         if ($errors > 0) {
-            $this->command->warn("⚠️ {$errors} livros ignorados (classe ou disciplina não encontrada)");
+            $this->command->warn("⚠️ {$errors} livros ignorados");
         }
+        $this->command->info("══════════════════════════════════════════");
         
-        // Resumo por classe
+        // Estatísticas
         $this->command->newLine();
-        $this->command->info("📊 RESUMO POR CLASSE:");
-        foreach ($classes as $classe) {
-            $total = Livro::whereHas('disciplina', function($q) use ($classe) {
-                $q->whereHas('classes', function($qc) use ($classe) {
-                    $qc->where('classe_id', $classe->id);
-                });
-            })->count();
-            $this->command->line("   {$classe->nome}: {$total} livros");
-        }
+        $this->command->info("📊 ESTATÍSTICAS:");
+        $this->command->line("   📚 Total de livros: " . Livro::count());
+        $this->command->line("   📖 Por disciplina: " . Livro::distinct('disciplina_id')->count('disciplina_id'));
+        $this->command->line("   🏫 Por turma: " . Livro::distinct('turma_id')->count('turma_id'));
+    }
+    
+    private function getLivrosData(): array
+    {
+        return [
+            // ==================== 1ª CLASSE ====================
+            [
+                'titulo' => 'Estudo Manual e Plástica - 1ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Manual e Plástica para a 1ª Classe.',
+                'classe_nome' => '1ª Classe',
+            ],
+            [
+                'titulo' => 'Matemática - 1ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'MAT',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Matemática para a 1ª Classe.',
+                'classe_nome' => '1ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Musical - 1ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMU',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Musical para a 1ª Classe.',
+                'classe_nome' => '1ª Classe',
+            ],
+            [
+                'titulo' => 'Estudo do Meio - 1ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EM',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Estudo do Meio para a 1ª Classe.',
+                'classe_nome' => '1ª Classe',
+            ],
+            [
+                'titulo' => 'Língua Portuguesa - 1ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'LP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Língua Portuguesa para a 1ª Classe.',
+                'classe_nome' => '1ª Classe',
+            ],
+            
+            // ==================== 2ª CLASSE ====================
+            [
+                'titulo' => 'Língua Portuguesa - 2ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'LP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Língua Portuguesa para a 2ª Classe.',
+                'classe_nome' => '2ª Classe',
+            ],
+            [
+                'titulo' => 'Estudo do Meio - 2ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EM',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Estudo do Meio para a 2ª Classe.',
+                'classe_nome' => '2ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Manual e Plástica - 2ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Manual e Plástica para a 2ª Classe.',
+                'classe_nome' => '2ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Musical - 2ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMU',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Musical para a 2ª Classe.',
+                'classe_nome' => '2ª Classe',
+            ],
+            [
+                'titulo' => 'Matemática - 2ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'MAT',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Matemática para a 2ª Classe.',
+                'classe_nome' => '2ª Classe',
+            ],
+            
+            // ==================== 3ª CLASSE ====================
+            [
+                'titulo' => 'Educação Musical - 3ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMU',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Musical para a 3ª Classe.',
+                'classe_nome' => '3ª Classe',
+            ],
+            [
+                'titulo' => 'Estudo do Meio - 3ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EM',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Estudo do Meio para a 3ª Classe.',
+                'classe_nome' => '3ª Classe',
+            ],
+            [
+                'titulo' => 'Matemática - 3ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'MAT',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Matemática para a 3ª Classe.',
+                'classe_nome' => '3ª Classe',
+            ],
+            [
+                'titulo' => 'Língua Portuguesa - 3ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'LP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Língua Portuguesa para a 3ª Classe.',
+                'classe_nome' => '3ª Classe',
+            ],
+            
+            // ==================== 4ª CLASSE ====================
+            [
+                'titulo' => 'Estudo do Meio - 4ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EM',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Estudo do Meio para a 4ª Classe.',
+                'classe_nome' => '4ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Manual e Plástica - 4ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Manual e Plástica para a 4ª Classe.',
+                'classe_nome' => '4ª Classe',
+            ],
+            [
+                'titulo' => 'Matemática - 4ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'MAT',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Matemática para a 4ª Classe.',
+                'classe_nome' => '4ª Classe',
+            ],
+            [
+                'titulo' => 'Língua Portuguesa - 4ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'LP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Língua Portuguesa para a 4ª Classe.',
+                'classe_nome' => '4ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Musical - 4ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMU',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Musical para a 4ª Classe.',
+                'classe_nome' => '4ª Classe',
+            ],
+            
+            // ==================== 5ª CLASSE ====================
+            [
+                'titulo' => 'Ciências da Natureza - 5ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'CN',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Ciências da Natureza para a 5ª Classe.',
+                'classe_nome' => '5ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Moral e Cívica - 5ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMC',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Moral e Cívica para a 5ª Classe.',
+                'classe_nome' => '5ª Classe',
+            ],
+            [
+                'titulo' => 'Geografia - 5ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'GEO',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Geografia para a 5ª Classe.',
+                'classe_nome' => '5ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Manual e Plástica - 5ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Manual e Plástica para a 5ª Classe.',
+                'classe_nome' => '5ª Classe',
+            ],
+            [
+                'titulo' => 'História - 5ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'HIST',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de História para a 5ª Classe.',
+                'classe_nome' => '5ª Classe',
+            ],
+            [
+                'titulo' => 'Matemática - 5ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'MAT',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Matemática para a 5ª Classe.',
+                'classe_nome' => '5ª Classe',
+            ],
+            [
+                'titulo' => 'Língua Portuguesa - 5ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'LP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Língua Portuguesa para a 5ª Classe.',
+                'classe_nome' => '5ª Classe',
+            ],
+            
+            // ==================== 6ª CLASSE ====================
+            [
+                'titulo' => 'Ciências da Natureza - 6ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'CN',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Ciências da Natureza para a 6ª Classe.',
+                'classe_nome' => '6ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Moral e Cívica - 6ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMC',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Moral e Cívica para a 6ª Classe.',
+                'classe_nome' => '6ª Classe',
+            ],
+            [
+                'titulo' => 'Educação Manual e Plástica - 6ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'EMP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Educação Manual e Plástica para a 6ª Classe.',
+                'classe_nome' => '6ª Classe',
+            ],
+            [
+                'titulo' => 'Geografia - 6ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'GEO',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Geografia para a 6ª Classe.',
+                'classe_nome' => '6ª Classe',
+            ],
+            [
+                'titulo' => 'História - 6ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'HIST',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de História para a 6ª Classe.',
+                'classe_nome' => '6ª Classe',
+            ],
+            [
+                'titulo' => 'Matemática - 6ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'MAT',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Matemática para a 6ª Classe.',
+                'classe_nome' => '6ª Classe',
+            ],
+            [
+                'titulo' => 'Língua Portuguesa - 6ª Classe',
+                'autor' => 'Equipa Xilonga',
+                'editora' => 'Xilonga Editora',
+                'disciplina_codigo' => 'LP',
+                'ano_publicacao' => 2024,
+                'descricao' => 'Manual de Língua Portuguesa para a 6ª Classe.',
+                'classe_nome' => '6ª Classe',
+            ],
+        ];
     }
 }
